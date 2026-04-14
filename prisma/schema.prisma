@@ -1,0 +1,43 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+
+datasource db {
+  provider = "postgresql"
+ 
+}
+
+model User {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  name      String?
+  createdAt DateTime  @default(now())
+  keywords  Keyword[]
+  bookmarks Bookmark[]
+}
+
+model Keyword {
+  id        String   @id @default(cuid())
+  keyword   String
+  category  String
+  createdAt DateTime @default(now())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, keyword])
+}
+
+model Bookmark {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  url         String
+  source      String
+  publishedAt String?
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
