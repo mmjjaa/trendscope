@@ -26,16 +26,32 @@ const CompareChart = dynamic(
     })),
   { ssr: false },
 );
+
+const DEFAULT_KEYWORDS = [
+  { keyword: "AI", category: "기술" },
+  { keyword: "주식", category: "경제" },
+  { keyword: "부동산", category: "경제" },
+];
+
 export default function DashboardPage() {
   const keywords = useKeywordStore((s) => s.keywords);
   const fetchKeywords = useKeywordStore((s) => s.fetchKeywords);
+  const addKeyword = useKeywordStore((s) => s.addKeyword);
 
   const [activeId, setActiveId] = useState<string>(keywords[0]?.id ?? "");
   const activeKeyword = keywords.find((k) => k.id === activeId) ?? keywords[0];
 
   useEffect(() => {
-    fetchKeywords();
+    fetchKeywords().then(() => {
+      const current = useKeywordStore.getState().keywords;
+      if (current.length === 0) {
+        DEFAULT_KEYWORDS.forEach(({ keyword, category }) =>
+          addKeyword(keyword, category),
+        );
+      }
+    });
   }, []);
+
   const { data: newsData, isLoading: newsLoading } = useNews(
     activeKeyword?.keyword ?? "",
   );
@@ -60,7 +76,10 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-[#f8f9fa]">
       <header className="border-b border-gray-200 bg-white px-8 py-4 sticky top-0 z-10 shadow-sm">
         <div className="mx-auto max-w-6xl flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <div
+            className="flex items-center gap-3 cursor-pointer"
+            onClick={() => window.location.reload()}
+          >
             <div className="h-9 w-9 rounded-xl bg-[#00835b] flex items-center justify-center shadow-md">
               <span className="text-white text-xs font-bold">TS</span>
             </div>
