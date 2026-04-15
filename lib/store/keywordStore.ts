@@ -15,7 +15,7 @@ interface KeywordStore {
   removeKeyword: (id: string) => Promise<void>;
 }
 
-const API_URL = "http://localhost:8080/api/keywords";
+const API_URL = "/api/keywords";
 
 export const useKeywordStore = create<KeywordStore>()(
   immer((set) => ({
